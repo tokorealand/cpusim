@@ -2,17 +2,12 @@ package com.company;
 import java.io.*;
 
 public class Translator {
-    int wordSize=0;
-    int regcnt=0;
-    int maxmem=0x0;
+  private  int wordSize=0;
+  private  int regcnt=0;
+  private  int maxmem=0x0;
+  private String code ="0x8B150289";
 
-    int X0 = 0;
-    int X1 = 0;
-    int X2 = 0;
-    int X3 = 0;
-    String code ="0x8B150289";
-
-    Memory memMap;
+    private Memory memMap;
 
 
     public  void main(String[] args) throws IOException {
@@ -28,8 +23,8 @@ public class Translator {
         BufferedWriter writer =null;
 
         try {
-            reader = new BufferedReader(new FileReader("/home/lu/assm.as"));
-            writer = new BufferedWriter(new FileWriter("/home/lu/output.txt"));
+            reader = new BufferedReader(new FileReader("/home/tokorealand/assm.as"));
+            writer = new BufferedWriter(new FileWriter("/home/tokorealand/output.txt"));
 
             String line;
             while ((line = reader.readLine()) != null) {
@@ -56,7 +51,7 @@ public class Translator {
     }
 
 
-    void parseAssemblyLine(String assmLine)
+    private void parseAssemblyLine(String assmLine)
     {
         String [] command= new String[6];
         String[] arrayLine;
@@ -74,7 +69,7 @@ public class Translator {
         {
             arrayLine= assmLine.split("\\s+");
             maxmem=Integer.parseInt(fromHexString(arrayLine[1],0),2);
-            memMap = new Memory(maxmem);
+            memMap = new Memory(maxmem,wordSize,regcnt);
         }
 
         if(assmLine.contains("ADD") && !assmLine.contains("ADDI"))
@@ -93,9 +88,10 @@ public class Translator {
             command[4]=fromHexString(command[4],5);
 
             String commandString = command[0] + command[1] + command[2] + command[3] + command[4];
+            System.out.println(commandString);
 
 
-            memMap.addToMap(commandString);
+            memMap.addInstructionToMemory(commandString);
 
             parseMemoryLine(commandString);
 
@@ -118,9 +114,36 @@ public class Translator {
             command[4]=fromHexString(command[4],5);
 
             String commandString = command[0] + command[1] + command[2] + command[3] + command[4];
+            memMap.addInstructionToMemory(commandString);
 
-            memMap.addToMap(commandString);
             memMap.printMap();
+
+
+            parseMemoryLine(commandString);
+
+
+        }
+
+        if(assmLine.contains("SUBI"))
+        {
+            arrayLine= assmLine.split("\\s+");
+            command[0]="0x658";
+            command[1]="0x" + arrayLine[3].substring(1,arrayLine[3].length()-1);
+            command[2]="0x0";
+            command[3]="0x"+ arrayLine[2].substring(1,arrayLine[2].length()-1);
+            command[4]="0x" + arrayLine[1].substring(1,arrayLine[1].length()-1);
+
+            command[0]=fromHexString(command[0],11);
+            command[1]=fromHexString(command[1],5);
+            command[2]=fromHexString(command[2],6);
+            command[3]=fromHexString(command[3],5);
+            command[4]=fromHexString(command[4],5);
+
+            String commandString = command[0] + command[1] + command[2] + command[3] + command[4];
+            memMap.addInstructionToMemory(commandString);
+
+            memMap.printMap();
+
 
             parseMemoryLine(commandString);
 
@@ -192,12 +215,11 @@ public class Translator {
 
 
         if(String.valueOf(opcode) .equals( fromHexString("0x458",0))) System.out.println("ayo");
-        System.out.println(X0);
 
     }
 
 
-    public String fromHexString(String hex, int bits) {
+    String fromHexString(String hex, int bits) {
         int hexInt = Long.decode(hex).intValue();
 
         // System.out.println(hexInt);
@@ -224,13 +246,13 @@ public class Translator {
         return binInt;
     }
 
-    String hexToBinary(int hex) {
+    private String hexToBinary(int hex) {
         String bin = Integer.toBinaryString(hex);
         //System.out.println(bin.toString());
         return bin;
     }
 
-    String binarytoHex(String bin) {
+    private String binarytoHex(String bin) {
         int decimal = Integer.parseInt(bin,2);
         String hex = Integer.toString(decimal,16);
         //System.out.println(bin.toString());

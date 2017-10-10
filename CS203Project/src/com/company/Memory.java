@@ -1,55 +1,88 @@
 package com.company;
 
-public class Memory {
+class Memory {
 
-  String[] memMap;
-  int currentIndex=0;
-  int usedMem=0;
+    private String[] memMap;
+  private Byte[] memory;
+    private int currentIndex=0;
+  private int usedMem=0;
+  private int wordSize;
+  private int maxSize;
+  private int registerCount;
 
-        public Memory(int maxSize)
+        Memory(int maxSize, int wordSize, int registerCount)
         {
-            memMap = new String[maxSize];
-            for (int i=0; i<memMap.length; i++)
+            this.maxSize=maxSize;
+            this.wordSize=wordSize;
+            this.registerCount=registerCount;
+
+            memory = new Byte[maxSize];
+            for (int i=0; i<memory.length; i++)
             {
-                memMap[i]="0";
+                memory[i]=new Byte();
             }
         }
 
-         void addToMap(String memoryLine){
-             int byteSize = memoryLine.length()/8;
-                if(byteSize+usedMem<=memMap.length) {
-                    memMap[currentIndex] = memoryLine;
-                    for (int i=1; i<byteSize; i++)
-                    {
-                        memMap[currentIndex+i]="-";
-                    }
 
-                        currentIndex+=byteSize;
-                        usedMem += byteSize;
-                    return;
+
+
+
+        void addInstructionToMemory(String command)
+        {
+            String parser="";
+            char[] com = command.toCharArray();
+            System.out.println("GERE");
+            System.out.println(command);
+            for(int i=0; i<command.length(); i++){
+                parser+=com[i];
+                if((i+1)%8==0)
+                {
+                    System.out.println(parser);
+                    addToMemory(parser);
+                    parser="";
+                    System.out.println("srpe");
+
                 }
-                System.out.println("MAX MEM EXCEEDED");
+            }
+
+        }
+
+        private void addToMemory(String commandByte)
+        {
+            System.out.println("start");
+
+            System.out.println(commandByte);
+            System.out.println("Done");
+            if(currentIndex<maxSize) {
+                memory[currentIndex].setBinary(commandByte);
+                currentIndex++;
+            }
+            else  System.out.println("MAX MEM EXCEEDED");
 
         }
 
         void printMap()
         {
-            for (int i=0; i<memMap.length; i++)
+            System.out.println("WS-"+Integer.toString(wordSize)+":MM-"+Integer.toString(maxSize) +":RC-"+Integer.toString(registerCount));
+            String border = new String(new char[wordSize*10]).replace("\0", "-");
+
+            for (int i=0; i<memory.length; i++)
             {
-                if(i%10==0)
+                if(i%wordSize==0)
                 {
                     System.out.println(" ");
-                    System.out.println("--------------------------------------------------------------------------------------------");
-                    System.out.print("|");
-                }
-                if(!(memMap[i].equals("-"))) {
-                    System.out.print(memMap[i]);
+                    System.out.println(border);
+                    System.out.print("0x"+Integer.toString(i));
                     System.out.print("|");
                 }
 
+                    System.out.print(memory[i].getBinary());
+                    System.out.print("|");
+
+
             }
             System.out.println(" ");
-            System.out.println("--------------------------------------------------------------------------------------------");
+            System.out.println(border);
 
         }
 
