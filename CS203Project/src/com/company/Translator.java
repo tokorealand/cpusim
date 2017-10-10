@@ -6,18 +6,30 @@ public class Translator {
   private  int regcnt=0;
   private  int maxmem=0x0;
   private String code ="0x8B150289";
+  private InstructionSet ins = new InstructionSet();
+
+
 
     private Memory memMap;
 
 
     public  void main(String[] args) throws IOException {
-        parseMemoryLine(code);
 
+
+    }
+
+    void setInstructions()
+    {
+        ins.addInstruction("ADD","0x458","","R");
+        ins.addInstruction("ADDI","0x488","","I");
+        ins.addInstruction("SUB","0x658","","R");
+        ins.addInstruction("SUBI","0x688","","I");
 
     }
 
     void readAssemblyFile(String inputFile) throws  IOException
     {
+        setInstructions();
         System.out.println("FFFFFa");
         BufferedReader reader =null;
         BufferedWriter writer =null;
@@ -32,9 +44,11 @@ public class Translator {
                 parseAssemblyLine(line);
                 writer.write(line);
             }
+            memMap.printMap();
 
         }
         finally {
+            parseMemoryLine();
             if (reader != null) {
                 reader.close();
             }
@@ -72,83 +86,13 @@ public class Translator {
             memMap = new Memory(maxmem,wordSize,regcnt);
         }
 
-        if(assmLine.contains("ADD") && !assmLine.contains("ADDI"))
+        String lineIns= ins.checkLineForInstruction(assmLine);
+        if(lineIns!="")
         {
-            arrayLine= assmLine.split("\\s+");
-            command[0]="0x458";
-            command[1]="0x" + arrayLine[3].substring(1,arrayLine[3].length()-1);
-            command[2]="0x0";
-            command[3]="0x"+ arrayLine[2].substring(1,arrayLine[2].length()-1);
-            command[4]="0x" + arrayLine[1].substring(1,arrayLine[1].length()-1);
-
-            command[0]=fromHexString(command[0],11);
-            command[1]=fromHexString(command[1],5);
-            command[2]=fromHexString(command[2],6);
-            command[3]=fromHexString(command[3],5);
-            command[4]=fromHexString(command[4],5);
-
-            String commandString = command[0] + command[1] + command[2] + command[3] + command[4];
-            System.out.println(commandString);
-
-
-            memMap.addInstructionToMemory(commandString);
-
-            parseMemoryLine(commandString);
-
+            memMap.addInstructionToMemory(lineIns);
 
         }
 
-        if(assmLine.contains("SUBI"))
-        {
-            arrayLine= assmLine.split("\\s+");
-            command[0]="0x658";
-            command[1]="0x" + arrayLine[3].substring(1,arrayLine[3].length()-1);
-            command[2]="0x0";
-            command[3]="0x"+ arrayLine[2].substring(1,arrayLine[2].length()-1);
-            command[4]="0x" + arrayLine[1].substring(1,arrayLine[1].length()-1);
-
-            command[0]=fromHexString(command[0],11);
-            command[1]=fromHexString(command[1],5);
-            command[2]=fromHexString(command[2],6);
-            command[3]=fromHexString(command[3],5);
-            command[4]=fromHexString(command[4],5);
-
-            String commandString = command[0] + command[1] + command[2] + command[3] + command[4];
-            memMap.addInstructionToMemory(commandString);
-
-            memMap.printMap();
-
-
-            parseMemoryLine(commandString);
-
-
-        }
-
-        if(assmLine.contains("SUBI"))
-        {
-            arrayLine= assmLine.split("\\s+");
-            command[0]="0x658";
-            command[1]="0x" + arrayLine[3].substring(1,arrayLine[3].length()-1);
-            command[2]="0x0";
-            command[3]="0x"+ arrayLine[2].substring(1,arrayLine[2].length()-1);
-            command[4]="0x" + arrayLine[1].substring(1,arrayLine[1].length()-1);
-
-            command[0]=fromHexString(command[0],11);
-            command[1]=fromHexString(command[1],5);
-            command[2]=fromHexString(command[2],6);
-            command[3]=fromHexString(command[3],5);
-            command[4]=fromHexString(command[4],5);
-
-            String commandString = command[0] + command[1] + command[2] + command[3] + command[4];
-            memMap.addInstructionToMemory(commandString);
-
-            memMap.printMap();
-
-
-            parseMemoryLine(commandString);
-
-
-        }
 
 
     }
@@ -157,64 +101,16 @@ public class Translator {
 
 
 
-    void parseMemoryLine(String memline)
+    void parseMemoryLine()
     {
-        char[] memlineBin = memline.toCharArray();
-        char[] opcode = new char[11];
-        char[] rd = new char[5];
-        char[] rm =  new char[5];
-        char[] shamt =  new char[6];
-        char[] rn =  new char[5];
-
-        for(int i = 0; i<memlineBin.length; i++)
-        {
-            if(i<11)
-            {
-                opcode[i]=memlineBin[i];
-            }
-            if(i>10 && i<16)
-            {
-                rm[i-11]=memlineBin[i];
-            }
-            if(i>15 && i<22)
-            {
-                shamt[i-16]=memlineBin[i];
-            }
-            if(i>21 && i<27)
-            {
-                rn[i-22]=memlineBin[i];
-            }
-            if(i>26 )
-            {
-                rd[i-27]=memlineBin[i];
-            }
-
+        int currentByte=0;
+        while(currentByte+4<maxmem) {
+            String commandLine = memMap.retriveInstruction(currentByte);
+            String command = ins.parseMemoryForInstruction(commandLine);
+            if(command!="") System.out.println(command);
+            currentByte+=4;
         }
 
-        if(("0x"+ binarytoHex(String.valueOf(opcode))).equals("0x458"))
-        {
-
-
-            String command = "ADD " +
-                    "X" + String.valueOf(Integer.parseInt(String.valueOf(rd),2)) +
-                    ", X" + String.valueOf(Integer.parseInt(String.valueOf(rn),2)) +
-                    ", X" + String.valueOf(Integer.parseInt(String.valueOf(rm),2) +";");
-                    System.out.println(command);
-        }
-
-        if(("0x"+ binarytoHex(String.valueOf(opcode))).equals("0x658"))
-        {
-
-            String command = "SUBI " +
-                    "X" + String.valueOf(Integer.parseInt(String.valueOf(rd),2)) +
-                    ", X" + String.valueOf(Integer.parseInt(String.valueOf(rn),2)) +
-                    ", #" + String.valueOf(Integer.parseInt(String.valueOf(rm),2) +";");
-            System.out.println(command);
-        }
-
-
-
-        if(String.valueOf(opcode) .equals( fromHexString("0x458",0))) System.out.println("ayo");
 
     }
 

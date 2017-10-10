@@ -3,12 +3,12 @@ package com.company;
 class Memory {
 
     private String[] memMap;
-  private Byte[] memory;
+    private Byte[] memory;
     private int currentIndex=0;
-  private int usedMem=0;
-  private int wordSize;
-  private int maxSize;
-  private int registerCount;
+    private int usedMem=0;
+    private int wordSize;
+    private int maxSize;
+    private int registerCount;
 
         Memory(int maxSize, int wordSize, int registerCount)
         {
@@ -23,7 +23,15 @@ class Memory {
             }
         }
 
-
+        String retriveInstruction(int byteNum)
+        {
+            String bitCommand="";
+            for(int i=0; i<4; i++)
+            {
+                bitCommand+=memory[byteNum+i].getBinary();
+            }
+            return bitCommand;
+        }
 
 
 

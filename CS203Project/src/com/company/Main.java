@@ -8,9 +8,9 @@ public class Main {
 
         Translator t = new Translator();
         System.out.println("DDDDD");
-        t.parseMemoryLine(t.fromHexString("0x8B150289",0));
 
         t.readAssemblyFile("D");
+        t.parseMemoryLine();
 
     }
 }
