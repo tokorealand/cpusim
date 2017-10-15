@@ -80,7 +80,7 @@ class Memory {
                 {
                     System.out.println(" ");
                     System.out.println(border);
-                    System.out.print("0x"+Integer.toString(i));
+                    System.out.print("0x"+Integer.toHexString(i));
                     System.out.print("|");
                 }
 
@@ -93,6 +93,39 @@ class Memory {
             System.out.println(border);
 
         }
+
+
+    String stringMap()
+    {
+        String map = "WS-"+Integer.toString(wordSize)+":MM-"+Integer.toString(maxSize) +":RC-"+Integer.toString(registerCount);
+        String border = new String(new char[(wordSize/8)*20]).replace("\0", "-");
+
+        for (int i=0; i<memory.length; i++)
+        {
+            if(i%(wordSize/8)==0)
+            {
+                map+="\n";
+                map+=border+"\n";
+                map+="0x"+Integer.toString(i);
+                map+="|";
+
+            }
+
+            map+=memory[i].getBinary();
+            map+="|";
+
+
+        }
+        map+="\n";
+        map+=border+"\n";
+        return  map;
+
+    }
+
+    int getMaxSize()
+    {
+        return maxSize;
+    }
 
 
 }

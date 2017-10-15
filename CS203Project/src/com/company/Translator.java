@@ -163,4 +163,14 @@ public class Translator {
         //System.out.println(bin.toString());
         return hex;
     }
+
+    public String retreiveMemImage()
+    {
+        return memMap.stringMap();
+    }
+
+    public Cpu sendCpu()
+    {
+      return new Cpu(ins,memMap);
+    }
 }
