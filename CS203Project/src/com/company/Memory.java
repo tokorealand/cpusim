@@ -72,11 +72,11 @@ class Memory {
         void printMap()
         {
             System.out.println("WS-"+Integer.toString(wordSize)+":MM-"+Integer.toString(maxSize) +":RC-"+Integer.toString(registerCount));
-            String border = new String(new char[wordSize*10]).replace("\0", "-");
+            String border = new String(new char[(wordSize/8)*10]).replace("\0", "-");
 
             for (int i=0; i<memory.length; i++)
             {
-                if(i%wordSize==0)
+                if(i%(wordSize/8)==0)
                 {
                     System.out.println(" ");
                     System.out.println(border);
