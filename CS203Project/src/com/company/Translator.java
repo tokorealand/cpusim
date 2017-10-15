@@ -20,10 +20,16 @@ public class Translator {
 
     void setInstructions()
     {
-        ins.addInstruction("ADD","0x458","","R");
-        ins.addInstruction("ADDI","0x488","","I");
-        ins.addInstruction("SUB","0x658","","R");
-        ins.addInstruction("SUBI","0x688","","I");
+        ins.addInstruction("ADD","458","R");
+        ins.addInstruction("ADDI","488","I");
+        ins.addInstruction("ADDS","558","R");
+        ins.addInstruction("ADDIS","588","I");
+
+
+        ins.addInstruction("SUB","658","R");
+        ins.addInstruction("SUBI","688","I");
+        ins.addInstruction("SUBS","758","R");
+        ins.addInstruction("SUBIS","788","I");
 
     }
 
@@ -87,6 +93,8 @@ public class Translator {
         }
 
         String lineIns= ins.checkLineForInstruction(assmLine);
+
+
         if(lineIns!="")
         {
             memMap.addInstructionToMemory(lineIns);
@@ -107,7 +115,8 @@ public class Translator {
         while(currentByte+4<maxmem) {
             String commandLine = memMap.retriveInstruction(currentByte);
             String command = ins.parseMemoryForInstruction(commandLine);
-            if(command!="") System.out.println(command);
+            System.out.println("SHOUDL ");
+            if(command!="") System.out.println(command+"cool");
             currentByte+=4;
         }
 
