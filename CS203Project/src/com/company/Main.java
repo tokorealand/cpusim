@@ -12,5 +12,7 @@ public class Main {
         t.readAssemblyFile("D");
         t.parseMemoryLine();
 
+        Gui gu = new Gui(t);
+
     }
 }
