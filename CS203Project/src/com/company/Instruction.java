@@ -14,11 +14,11 @@ class Instruction {
 
     }
 
-    Instruction(String name,String opcode,String opcode2, String type)
+    Instruction(String name,String opcode, String type)
     {
         this.name=name;
-        this.opcode=opcode;
-        this.opcode2=opcode2;
+        this.opcode="0x" + opcode;
+        if(type.equals("I")) this.opcode2 ="0x"+ String.valueOf(Integer.parseInt(opcode)+1);
         this.type=type;
         setOpcodeBitSize();
     }
