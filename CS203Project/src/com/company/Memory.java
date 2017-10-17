@@ -5,10 +5,15 @@ class Memory {
     private String[] memMap;
     private Byte[] memory;
     private int currentIndex=0;
-    private int usedMem=0;
     private int wordSize;
     private int maxSize;
     private int registerCount;
+
+
+    public static void main(String args[])
+    {
+
+    }
 
         Memory(int maxSize, int wordSize, int registerCount)
         {
@@ -55,6 +60,32 @@ class Memory {
 
         }
 
+        public void setCurrentIndex(int index)
+        {
+            currentIndex=index;
+        }
+
+    void addData(String data)
+    {
+        String parser="";
+        char[] dats = data.toCharArray();
+        System.out.println("GERE");
+        System.out.println(data);
+        for(int i=0; i<data.length(); i++){
+            parser+=dats[i];
+            if((i+1)%8==0)
+            {
+                System.out.println(parser);
+                addToMemory(parser);
+                parser="";
+                System.out.println("srpe");
+
+            }
+        }
+
+    }
+
+
         private void addToMemory(String commandByte)
         {
             System.out.println("start");
@@ -67,6 +98,17 @@ class Memory {
             }
             else  System.out.println("MAX MEM EXCEEDED");
 
+        }
+
+        public void alignToBoundary(int boundary)
+        {
+            for(int i=0; i<memory.length-currentIndex; i++){
+                if((currentIndex+i)%boundary==0)
+                {
+                    currentIndex=currentIndex+i;
+                    return;
+                }
+            }
         }
 
         void printMap()
@@ -106,7 +148,7 @@ class Memory {
             {
                 map+="\n";
                 map+=border+"\n";
-                map+="0x"+Integer.toString(i);
+                map+="0x"+Integer.toHexString(i);
                 map+="|";
 
             }
