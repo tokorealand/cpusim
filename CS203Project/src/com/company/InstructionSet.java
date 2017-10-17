@@ -1,12 +1,15 @@
 package com.company;
 import java.math.BigInteger;
+import java.util.Map;
 
 public class InstructionSet {
-    private Instruction[] ins = new Instruction[8];
+    private Instruction[] ins = new Instruction[9];
     private int current=0;
+    Map<String, Integer> labels;
 
-    public InstructionSet()
+    public InstructionSet(Map<String,Integer> lab)
     {
+        labels=lab;
     }
 
     void addInstruction(String name, String opcode, String type)
@@ -54,6 +57,9 @@ public class InstructionSet {
         System.out.println(memlineBin);
         if (iR==null) System.out.println("0x"+String.valueOf(opcodeCheck) +"YOO");
         if(iR!=null) {
+
+            if(iR.name.equals("HALT")) return "HALT";
+
 
             if(iR.type.equals("R"))
             {
@@ -159,16 +165,43 @@ public class InstructionSet {
     String parseInstruction(Instruction iR, String parsedLine)
     {
         String[] arrayLine;
-        String [] command= new String[6];
+        String [] command= new String[10];
 
-        if(iR.type=="R")
+        if(iR.name == "HALT") return "00000000001000000000000000000000";
+
+
+            if(iR.type=="R")
         {
             arrayLine= parsedLine.split("\\s+");
             command[0]=iR.opcode;
-            command[1]="0x" + arrayLine[3].substring(1,arrayLine[3].length()-1);
             command[2]="0x0";
-            command[3]="0x"+ arrayLine[2].substring(1,arrayLine[2].length()-1);
+            System.out.println("LABELSSS");
+            System.out.println(arrayLine[3]);
+            if(labels.containsKey(arrayLine[3].substring(0,arrayLine[3].length()-1)))
+            {
+                command[1]="0x" + labels.get(arrayLine[3].substring(0,arrayLine[3].length()-1));
+                System.out.println("LABELSSS");
+                System.out.println(command[1]);
+            }
+            else{
+                command[1]="0x"+ arrayLine[3].substring(1,arrayLine[3].length()-1);
+
+            }
+
+            if(labels.containsKey(arrayLine[2].substring(0,arrayLine[2].length()-1)))
+            {
+               command[3]="0x" + labels.get(arrayLine[2].substring(0,arrayLine[2].length()-1));
+                System.out.println("LABELSSS2");
+                System.out.println(command[1]);
+            }
+            else{
+                command[3]="0x"+ arrayLine[2].substring(1,arrayLine[2].length()-1);
+
+            }
+
+
             command[4]="0x" + arrayLine[1].substring(1,arrayLine[1].length()-1);
+
 
             command[0]=fromHexString(command[0],11);
             command[1]=fromHexString(command[1],5);
