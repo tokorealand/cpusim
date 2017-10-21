@@ -10,7 +10,6 @@ public class Main {
         System.out.println("DDDDD");
 
         t.readAssemblyFile("D");
-        t.parseMemoryLine();
 
         Gui gu = new Gui(t);
 
