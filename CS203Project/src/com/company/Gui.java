@@ -51,6 +51,7 @@ public class Gui extends Frame implements ActionListener{
     public Gui(Translator aTrans )
     {
      setLayout(new FlowLayout(FlowLayout.CENTER));
+
      trans = aTrans;
      cpu=trans.sendCpu();
         Panel p1 = new Panel();
@@ -208,11 +209,14 @@ public class Gui extends Frame implements ActionListener{
             stepC++;
             step.setText(String.valueOf(stepC));
             registers=new JTextArea(cpu.getRegisters());
+            memMap=new JTextArea(trans.retreiveMemImage());
             z.setText(cpu.getRequestedFlag(0));
             n.setText(cpu.getRequestedFlag(1));
             c.setText(cpu.getRequestedFlag(2));
             v.setText(cpu.getRequestedFlag(3));
             myScrollPaneReg.setViewportView(registers);
+            myScrollPane.setViewportView(memMap);
+
 
         }
 
