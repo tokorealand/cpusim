@@ -26,9 +26,38 @@ class Memory {
 
         }
 
+        public void storeWord(int location, String word)
+        {
+            int holder=currentIndex;
+            currentIndex=location;
+            setWordInMemory(word);
+            currentIndex=holder;
+        }
+
+    void setWordInMemory(String command)
+    {
+        System.out.println(command);
+        System.out.println("COMMADE");
+        String parser="";
+        char[] com = command.toCharArray();
+
+        for(int i=0; i<command.length(); i++){
+            parser+=com[i];
+            if((i+1)%8==0)
+            {
+                setByte(parser);
+                parser="";
+
+            }
+        }
+
+    }
+
         String retriveWord(int byteNum)
         {
             String bitCommand="";
+            System.out.println("QQQQ");
+            System.out.println(byteNum);
                 for (int i = 0; i < 4; i++) {
                     bitCommand += memory.get(byteNum + i).getBinary();
 
@@ -44,6 +73,13 @@ class Memory {
 
     }
 
+    public void setByte(String bin)
+    {
+      memory.get(currentIndex).setBinary(bin);
+      currentIndex++;
+
+    }
+
     public String getStackPointer()
     {
         return stackPointer;
@@ -53,6 +89,8 @@ class Memory {
 
         void addInstructionToMemory(String command)
         {
+            System.out.println(command);
+            System.out.println("COMMADE");
             String parser="";
             char[] com = command.toCharArray();
 
@@ -78,17 +116,19 @@ class Memory {
         String parser="";
         char[] dats = data.toCharArray();
 
-        for(int i=0; i<data.length(); i++){
-            parser+=dats[i];
-            if((i+1)%8==0)
-            {
-                addToMemory(parser);
-                parser="";
 
+            for (int i = 0; i < data.length(); i++) {
+                parser += dats[i];
+                if ((i + 1) % 8 == 0) {
+                    addToMemory(parser);
+                    parser = "";
+
+                }
             }
         }
 
-    }
+
+
 
 
 
