@@ -2,11 +2,12 @@ package com.company;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
 public class Gui extends Frame implements ActionListener{
 
     // instance variables - replace the example below with your own
     private Label     register_label;  // Declare a Label component
+    private Label     step_label;  // Declare a Label component
+
     private TextField register_value;  // Declare a TextField component
     private Label     z_label;  // Declare a Label component
     private Label     n_label;  // Declare a Label component
@@ -28,10 +29,11 @@ public class Gui extends Frame implements ActionListener{
     private JTextArea registers;
 
 
-    private int time = 0;              // Counter's value
+    private int stepC = 0;              // Counter's value
     private  Translator trans;
     private  Cpu cpu;
     private TextField pc;
+    private TextField step;
     private TextField sp;
 
     private TextField ir;
@@ -65,12 +67,18 @@ public class Gui extends Frame implements ActionListener{
         Panel p2 = new Panel();
         p2.setLayout(new FlowLayout());
 
+        step_label = new Label("Step:");
         register_label = new Label("PC: ");     // construct the Label component
+        p2.add(step_label);
+        step= new TextField("0", 3); // construct the TextField component
+        step.setEditable(false);       // set to read-only
+        p2.add(step);
         p2.add(register_label);                 // "super" Frame adds Label
+
+
 
         pc= new TextField("0", 10); // construct the TextField component
         pc.setEditable(false);       // set to read-only
-        pc.setText(cpu.getCurrentLocation());
         p2.add(pc);                  // "super" Frame adds TextField
 
         Panel p3 = new Panel();
@@ -97,8 +105,8 @@ public class Gui extends Frame implements ActionListener{
         instruction = new TextField(" ", 20); // construct the TextField component
         instruction.setEditable(false);       // set to read-only
         p4.add(instruction);                  // "super" Frame adds TextField
-        instruction.setText(cpu.getCurrentInstruction());
-        ir.setText(cpu.getCurrentBinaryInstruction());
+       // instruction.setText(cpu.getCurrentInstruction());
+     //   ir.setText(cpu.getCurrentBinaryInstruction());
 
 
 
@@ -151,7 +159,8 @@ public class Gui extends Frame implements ActionListener{
 
         sp= new TextField("0", 10); // construct the TextField component
         sp.setEditable(false);       // set to read-only
-        sp.setText("0x0");
+        sp.setText( cpu.getStack());
+
         p9.add(sp);
 
         memMap = new JTextArea(trans.retreiveMemImage());
@@ -161,11 +170,12 @@ public class Gui extends Frame implements ActionListener{
         memMap.setRows(20);
         myScrollPane.setViewportView(memMap);
         myScrollPaneReg.setViewportView(registers);
+        registers.setColumns(6);
         memMap.setEditable(false);
         registers.setEditable(false);
 
         setTitle("Simulator GUI");  // "super" Frame sets its title
-        setSize(550, 500);             // "super" Frame sets its initial window size
+        setSize(550, 600);             // "super" Frame sets its initial window size
 
         // add subpanels to the primary frame
         add(p1);
@@ -179,9 +189,9 @@ public class Gui extends Frame implements ActionListener{
         add(p9);
 
 
-
-        add(myScrollPane);
         add(myScrollPaneReg);
+        add(myScrollPane);
+
 
 
         setVisible(true);
@@ -190,10 +200,20 @@ public class Gui extends Frame implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent evt) {
         if (evt.getActionCommand().equals("Step") && !cpu.getCurrentInstruction().contains("HALT") ) {
-            cpu.getNextInstruction();
+            cpu.fetchAndExecute();
             instruction.setText(cpu.getCurrentInstruction());
             ir.setText(cpu.getCurrentBinaryInstruction());
             pc.setText(cpu.getCurrentLocation());
+            sp.setText(cpu.getStack());
+            stepC++;
+            step.setText(String.valueOf(stepC));
+            registers=new JTextArea(cpu.getRegisters());
+            z.setText(cpu.getRequestedFlag(0));
+            n.setText(cpu.getRequestedFlag(1));
+            c.setText(cpu.getRequestedFlag(2));
+            v.setText(cpu.getRequestedFlag(3));
+            myScrollPaneReg.setViewportView(registers);
+
         }
 
         else if (evt.getActionCommand().equals("Exit")) {
