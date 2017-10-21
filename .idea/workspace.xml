@@ -2,17 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="07c682f0-3cd8-47b2-b293-67bd90890331" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/CS203Project/src/com/company/Pair.java" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CS203Project/src/com/company/Pair.java" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CS203Project/out/production/CS203Project/com/company/Main.class" afterPath="$PROJECT_DIR$/CS203Project/out/production/CS203Project/com/company/Main.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CS203Project/out/production/CS203Project/com/company/Memory.class" afterPath="$PROJECT_DIR$/CS203Project/out/production/CS203Project/com/company/Memory.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CS203Project/out/production/CS203Project/com/company/Translator.class" afterPath="$PROJECT_DIR$/CS203Project/out/production/CS203Project/com/company/Translator.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CS203Project/.idea/workspace.xml" afterPath="$PROJECT_DIR$/CS203Project/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CS203Project/src/com/company/Cpu.java" afterPath="$PROJECT_DIR$/CS203Project/src/com/company/Cpu.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CS203Project/src/com/company/Gui.java" afterPath="$PROJECT_DIR$/CS203Project/src/com/company/Gui.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CS203Project/src/com/company/InstructionSet.java" afterPath="$PROJECT_DIR$/CS203Project/src/com/company/InstructionSet.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CS203Project/src/com/company/Memory.java" afterPath="$PROJECT_DIR$/CS203Project/src/com/company/Memory.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CS203Project/src/com/company/Register.java" afterPath="$PROJECT_DIR$/CS203Project/src/com/company/Register.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CS203Project/src/com/company/Translator.java" afterPath="$PROJECT_DIR$/CS203Project/src/com/company/Translator.java" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -27,7 +24,7 @@
       <file leaf-file-name="Translator.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/CS203Project/src/com/company/Translator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="684">
+            <state relative-caret-position="738">
               <caret line="43" column="39" lean-forward="false" selection-start-line="43" selection-start-column="39" selection-end-line="43" selection-end-column="39" />
               <folding />
             </state>
@@ -67,12 +64,9 @@
       <file leaf-file-name="InstructionSet.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/CS203Project/src/com/company/InstructionSet.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="576">
+            <state relative-caret-position="2682">
               <caret line="190" column="44" lean-forward="false" selection-start-line="190" selection-start-column="44" selection-end-line="190" selection-end-column="44" />
-              <folding>
-                <element signature="e#249#250#0" expanded="true" />
-                <element signature="e#275#276#0" expanded="true" />
-              </folding>
+              <folding />
             </state>
           </provider>
         </entry>
@@ -123,7 +117,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -161,9 +155,9 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
-      <pane id="AndroidView" />
       <pane id="PackagesPane" />
+      <pane id="AndroidView" />
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="RunDashboard">
@@ -315,6 +309,86 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/CS203Project/src/com/company/Translator.java">
       <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="738">
+          <caret line="43" column="39" lean-forward="false" selection-start-line="43" selection-start-column="39" selection-end-line="43" selection-end-column="39" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CS203Project/src/com/company/Byte.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="15" column="0" lean-forward="false" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CS203Project/src/com/company/Memory.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="360">
+          <caret line="20" column="13" lean-forward="false" selection-start-line="20" selection-start-column="13" selection-end-line="20" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CS203Project/src/com/company/Main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="288">
+          <caret line="16" column="0" lean-forward="false" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CS203Project/src/com/company/InstructionSet.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3348">
+          <caret line="190" column="44" lean-forward="false" selection-start-line="190" selection-start-column="44" selection-end-line="190" selection-end-column="44" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CS203Project/src/com/company/Translator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="738">
+          <caret line="43" column="39" lean-forward="false" selection-start-line="43" selection-start-column="39" selection-end-line="43" selection-end-column="39" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CS203Project/src/com/company/Byte.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="15" column="0" lean-forward="false" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CS203Project/src/com/company/Memory.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="360">
+          <caret line="20" column="13" lean-forward="false" selection-start-line="20" selection-start-column="13" selection-end-line="20" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CS203Project/src/com/company/Main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="288">
+          <caret line="16" column="0" lean-forward="false" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CS203Project/src/com/company/InstructionSet.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3420">
+          <caret line="190" column="44" lean-forward="false" selection-start-line="190" selection-start-column="44" selection-end-line="190" selection-end-column="44" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CS203Project/src/com/company/Translator.java">
+      <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
@@ -435,7 +509,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/CS203Project/src/com/company/Translator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="684">
+        <state relative-caret-position="738">
           <caret line="43" column="39" lean-forward="false" selection-start-line="43" selection-start-column="39" selection-end-line="43" selection-end-column="39" />
           <folding />
         </state>
@@ -443,12 +517,9 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/CS203Project/src/com/company/InstructionSet.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="576">
+        <state relative-caret-position="2682">
           <caret line="190" column="44" lean-forward="false" selection-start-line="190" selection-start-column="44" selection-end-line="190" selection-end-column="44" />
-          <folding>
-            <element signature="e#249#250#0" expanded="true" />
-            <element signature="e#275#276#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
