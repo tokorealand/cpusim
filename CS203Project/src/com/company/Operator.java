@@ -28,11 +28,11 @@ public class Operator {
 
         else if(name.equals("AND"))
         {
-            register.setRegisters(Integer.parseInt(rd,2),logicalAnd(rn,rm));
+            register.setRegisters(Integer.parseInt(rd,2),bitAnd(rn,rm));
         }
         else if(name.equals("ORR"))
         {
-            register.setRegisters(Integer.parseInt(rd,2),logicalAnd(rn,rm));
+            register.setRegisters(Integer.parseInt(rd,2),bitAnd(rn,rm));
         }
     }
 
@@ -79,12 +79,33 @@ public class Operator {
 
     public void executeOperationD(String name, String rt, String rns, String dtAdds) {
         if (name.equals("LDUR")) {
-            int memLocation= Integer.parseInt(register.getRegister(Integer.parseInt(rns))) + Integer.parseInt(dtAdds);
+            System.out.println("SAASAS");
+
+            System.out.println(rt);
+            System.out.println(rns);
+            System.out.println(dtAdds);
+            System.out.println(Integer.parseInt(register.getRegister(Integer.parseInt(rns,2)),2));
+            System.out.println(Integer.parseInt(dtAdds,2));
+
+            int memLocation= Integer.parseInt(register.getRegister(Integer.parseInt(rns,2)),2) + Integer.parseInt(dtAdds,2);
+            System.out.println(memLocation);
+            String g=mem.retriveWord(memLocation);
+            System.out.println("mem1");
+            System.out.println(g);
+
+
+
             register.setRegisters(Integer.parseInt(rt),mem.retriveWord(memLocation));
         }
         else if (name.equals("STUR")) {
-            int memLocation= Integer.parseInt(register.getRegister(Integer.parseInt(rns))) + Integer.parseInt(dtAdds);
-            register.setRegisters(Integer.parseInt(rt),mem.retriveWord(memLocation));
+            int memLocation= Integer.parseInt(register.getRegister(Integer.parseInt(rns,2)),2) + Integer.parseInt(dtAdds,2);
+            String beingStored = register.getRegister(Integer.parseInt(rt,2));
+            System.out.println(memLocation);
+            System.out.println("pppp");
+            System.out.println(beingStored);
+
+
+            mem.storeWord(memLocation,beingStored);
         }
     }
 
@@ -211,7 +232,7 @@ public class Operator {
 
     }
 
-    private String logicalOr(String s1, String s2)
+    private String bitOr(String s1, String s2)
     {
         s1=padBinary(s1);
         s2=padBinary(s2);
@@ -226,7 +247,7 @@ public class Operator {
         return or;
     }
 
-    private String logicalEor(String s1, String s2)
+    private String bitEor(String s1, String s2)
     {
         s1=padBinary(s1);
         s2=padBinary(s2);
@@ -242,7 +263,7 @@ public class Operator {
         return eor;
     }
 
-    private String logicalAnd(String s1, String s2)
+    private String bitAnd(String s1, String s2)
     {
         s1=padBinary(s1);
         s2=padBinary(s2);
