@@ -84,7 +84,7 @@ public class Translator {
 
             memMap.printMap();
 
-            parseForInstruction();
+          //  parseForInstruction();
 
         }
         finally {
@@ -133,7 +133,7 @@ public class Translator {
     {
         int currentByte=0;
         while(currentByte+4<maxmem) {
-            String commandLine = memMap.retriveInstruction(currentByte);
+            String commandLine = memMap.retriveWord(currentByte);
             String command = ins.parseMemoryForInstruction(commandLine);
             if(command!="") System.out.println(command+"cool");
             currentByte+=4;
