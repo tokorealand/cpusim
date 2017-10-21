@@ -8,12 +8,10 @@ public class Translator {
   private  int regcnt=0;
   private  int maxmem=0x0;
   private  int currentPos=0;
-  private  int stackLocation=0;
-  Map<String, Integer> labels = new HashMap<String, Integer>();
-
-    private String code ="0x8B150289";
+  private  String stackLocation="0x0";
   private InstructionSet ins;
   private Memory memMap;
+  private Cpu cpu;
 
 
     public  void main(String[] args) throws IOException {
@@ -37,185 +35,106 @@ public class Translator {
         ins.addInstruction("SUBS","758","R");
         ins.addInstruction("SUBIS","788","I");
 
+        ins.addInstruction("LDUR","7c2","D");
+        ins.addInstruction("STUR","7c0","D");
+        ins.addInstruction("LDURSW","5c4","D");
+
+
+        ins.addInstruction("AND","450","R");
+        ins.addInstruction("ANDI","490","I");
+
+
+        ins.addInstruction("ORR","550","R");
+        ins.addInstruction("ORRI","590","I");
+
+        ins.addInstruction("EOR","650","R");
+        ins.addInstruction("EORI","690","I");
+
+        ins.addInstruction("LSL","69b","R");
+        ins.addInstruction("LSR","69a","R");
+
+
+
+
+
+
+
+
     }
 
     void readAssemblyFile(String inputFile) throws  IOException
     {
-        ins = new InstructionSet(labels);
+        ins = new InstructionSet();
         setInstructions();
-        System.out.println("FFFFFa");
         BufferedReader reader =null;
-        BufferedReader labelReader =null;
 
-        BufferedWriter writer =null;
+
 
         try {
-            reader = new BufferedReader(new FileReader("/home/tokorealand/assm.as"));
-            labelReader = new BufferedReader(new FileReader("/home/tokorealand/assm.as"));
-            writer = new BufferedWriter(new FileWriter("/home/tokorealand/output.txt"));
+            reader = new BufferedReader(new FileReader("/home/tokorealand/output.txt"));
+
 
             String line;
-            while ((line = labelReader.readLine()) != null) {
-                System.out.println(line);
-                parseLabels(line);
-                writer.write(line);
-            }
+
             while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-                parseAssemblyLine(line);
-                writer.write(line);
+                parseMem(line);
+
             }
+            cpu=new Cpu(ins,memMap,regcnt);
+
             memMap.printMap();
+
+            parseForInstruction();
 
         }
         finally {
-            parseMemoryLine();
             if (reader != null) {
                 reader.close();
             }
-            if (writer != null) {
-                writer.close();
-            }
+
         }
-        System.out.println(maxmem);
 
-        System.out.println(regcnt);
-
-        System.out.println(wordSize);
 
     }
 
 
-    private void parseLabels(String assmLine)
-    {
+
+    private void parseMem(String memLine) {
+        String[] command = new String[6];
         String[] arrayLine;
-        if(assmLine.contains(":"))
+
+        if(memLine.contains("WS"))
         {
-            String[] posLine= assmLine.split(":");
-            labels.put(posLine[0],currentPos);
+            arrayLine=memLine.split(":");
+            wordSize=Integer.parseInt(arrayLine[0].substring(3,arrayLine[0].length()));
+            maxmem=Integer.parseInt(arrayLine[1].substring(3,arrayLine[1].length()));
+            regcnt=Integer.parseInt(arrayLine[2].substring(3,arrayLine[2].length()));
+            stackLocation=arrayLine[3].substring(3,arrayLine[3].length());
+            memMap=new Memory(maxmem,wordSize,stackLocation);
+            return;
 
         }
-        else if(assmLine.contains(".pos"))
+
+        arrayLine=memLine.split("\\|");
+
+        if(arrayLine[0].contains("0x"))
         {
-            arrayLine= assmLine.split("\\s+");
-            System.out.println(arrayLine[0] + arrayLine[1]);
-            String[] posLine= assmLine.split("x");
-
-           currentPos=Integer.parseInt(posLine[1],16);
+            memMap.addToMemory(arrayLine[1]);
+            memMap.addToMemory(arrayLine[2]);
+            memMap.addToMemory(arrayLine[3]);
+            memMap.addToMemory(arrayLine[4]);
         }
-
-        else if(assmLine.contains(".align"))
-        {
-            arrayLine= assmLine.split("\\s+");
-            alignToBoundary(Integer.parseInt(arrayLine[1]));
-
-        }
-    }
-
-    private void alignToBoundary(int boundary)
-    {
-        for(int i=0; i<maxmem-currentPos; i++){
-            if((currentPos+i)%boundary==0)
-            {
-                currentPos=currentPos+i;
-            }
-        }
-    }
-
-    private void parseAssemblyLine(String assmLine)
-    {
-        String [] command= new String[6];
-        String[] arrayLine;
-        if(assmLine.contains(".wordsize"))
-        {
-            arrayLine  = assmLine.split("\\s+");
-            wordSize=Integer.parseInt(arrayLine[1]);
-        }
-       else if(assmLine.contains(".regcnt"))
-        {
-            arrayLine= assmLine.split("\\s+");
-            regcnt=Integer.parseInt(arrayLine[1]);
-        }
-       else if(assmLine.contains(".maxmem"))
-        {
-            arrayLine= assmLine.split("\\s+");
-            maxmem=Integer.parseInt(fromHexString(arrayLine[1],0),2);
-            memMap = new Memory(maxmem,wordSize,regcnt);
-        }
-
-       else if(assmLine.contains(".pos"))
-        {
-            arrayLine= assmLine.split("\\s+");
-            System.out.println(arrayLine[0] + arrayLine[1]);
-            String[] posLine= assmLine.split("x");
-
-            memMap.setCurrentIndex(Integer.parseInt(posLine[1],16));
-        }
-
-        else if(assmLine.contains(".align"))
-        {
-            arrayLine= assmLine.split("\\s+");
-
-            memMap.alignToBoundary(Integer.parseInt(arrayLine[1]));
-        }
-        else if(assmLine.contains(".double"))
-        {
-            arrayLine= assmLine.split("\\s+");
-            memMap.alignToBoundary(8);
-            memMap.addData(fromHexString(arrayLine[1],0));
-        }
-        else if(assmLine.contains(".single"))
-        {
-            arrayLine= assmLine.split("\\s+");
-            memMap.alignToBoundary(4);
-            memMap.addData(fromHexString(arrayLine[1],0));
-        }
-        else if(assmLine.contains(".half"))
-        {
-            arrayLine= assmLine.split("\\s+");
-            memMap.alignToBoundary(2);
-            memMap.addData(fromHexString(arrayLine[1],0));
-        }
-        else if(assmLine.contains(".byte"))
-        {
-            arrayLine= assmLine.split("\\s+");
-            memMap.alignToBoundary(1);
-            memMap.addData(fromHexString(arrayLine[1],0));
-        }
-        else if(assmLine.contains("stack"))
-        {
-            stackLocation=labels.get("stack");
-            labels.remove("stack");
-            System.out.println("STACK");
-            System.out.println(stackLocation);
-
-        }
-
-      else {
-            String lineIns = ins.checkLineForInstruction(assmLine);
-
-
-            if (lineIns != "") {
-                memMap.addInstructionToMemory(lineIns);
-
-            }
-        }
-
-
 
     }
 
 
 
-
-
-    void parseMemoryLine()
+    void parseForInstruction()
     {
         int currentByte=0;
         while(currentByte+4<maxmem) {
             String commandLine = memMap.retriveInstruction(currentByte);
             String command = ins.parseMemoryForInstruction(commandLine);
-            System.out.println("SHOUDL ");
             if(command!="") System.out.println(command+"cool");
             currentByte+=4;
         }
