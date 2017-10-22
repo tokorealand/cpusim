@@ -1,15 +1,34 @@
 package com.company;
 import java.math.BigInteger;
 
+
+/**
+ * The operator class is the calculator and execute manager of the project.
+ * It carries out all the instructions and has all the required helper methods
+ * to carry out each assembly instruction.
+ */
 public class Operator {
 
     Register register;
     Memory mem;
     int[] flags; //pos 0-zero 1-negative 2-carry 3-overflow
+
+
+
+
     public Operator()
     {
 
     }
+
+    /**
+     * This executes instructions of type R such as ADD, SUB, ADD, etc.
+     * @param name the name of the instruction
+     * @param rd   the destination register
+     * @param rm   the second argument register
+     * @param shamt number value
+     * @param rn   the first argument register
+     */
 
     public void executeOperationR(String name, String rd, String rm, String shamt, String rn)
     {
@@ -28,14 +47,39 @@ public class Operator {
 
         else if(name.equals("AND"))
         {
-            register.setRegisters(Integer.parseInt(rd,2),bitAnd(rn,rm));
+            register.setRegisters(Integer.parseInt(rd,2),bitAnd(
+                    register.getRegister(Integer.parseInt(rn,2)),
+                    register.getRegister(Integer.parseInt(rm,2))));
         }
-        else if(name.equals("ORR"))
+        else if(name.equals("OR"))
         {
-            register.setRegisters(Integer.parseInt(rd,2),bitAnd(rn,rm));
+            register.setRegisters(Integer.parseInt(rd,2),bitOr(rn,rm));
+        }
+        else if(name.equals("EOR"))
+        {
+            register.setRegisters(Integer.parseInt(rd,2),bitEor(rn,rm));
+        }
+        else if(name.equals("LSL"))
+        {
+            register.setRegisters(Integer.parseInt(rd,2),
+                    logicalLShift(register.getRegister(Integer.parseInt(rn,2)),shamt));
+        }
+        else if(name.equals("LSR"))
+        {
+            register.setRegisters(Integer.parseInt(rd,2),
+                    arithRShift(register.getRegister(Integer.parseInt(rn,2)),shamt));
         }
     }
 
+
+
+    /**
+     * This executes instructions of type I such as ADDI, SUBI, etc.
+     * @param name the name of the instruction
+     * @param rd   the destination register
+     * @param alu  the immediate value
+     * @param rn   the first argument register
+     */
     public void executeOperationI(String name, String alu, String rd, String rn)
     {
 
@@ -49,8 +93,7 @@ public class Operator {
         }
         else  if(name.equals("SUBI"))
         {
-            System.out.println(alu);
-            System.out.println("ALUHERE");
+
             register.setRegisters(Integer.parseInt(rd,2),binaryAddition(register.getRegister(Integer.parseInt(rn,2)),twoComplement(alu)));
 
 
@@ -59,8 +102,7 @@ public class Operator {
 
         else  if(name.equals("SUBIS"))
         {
-            System.out.println(alu);
-            System.out.println("ALUHERE");
+
             register.setRegisters(Integer.parseInt(rd,2),binaryAddition(register.getRegister(Integer.parseInt(rn,2)),twoComplement(alu)));
 
 
@@ -68,8 +110,7 @@ public class Operator {
 
         else  if(name.equals("ADDIS"))
         {
-            System.out.println(alu);
-            System.out.println("ALUHERE");
+
             register.setRegisters(Integer.parseInt(rd,2),binaryAddition(register.getRegister(Integer.parseInt(rn,2)),twoComplement(alu)));
 
 
@@ -77,21 +118,21 @@ public class Operator {
     }
 
 
+
+    /**
+     * This executes instructions of type D such as LDUR and STUR.
+     * @param name    the name of the instruction
+     * @param rt      the destination register or the base register
+     * @param dtAdds  the memory immediate
+     * @param rns     the base register or destination register
+     */
     public void executeOperationD(String name, String rt, String rns, String dtAdds) {
         if (name.equals("LDUR")) {
-            System.out.println("SAASAS");
 
-            System.out.println(rt);
-            System.out.println(rns);
-            System.out.println(dtAdds);
-            System.out.println(Integer.parseInt(register.getRegister(Integer.parseInt(rns,2)),2));
-            System.out.println(Integer.parseInt(dtAdds,2));
 
             int memLocation= Integer.parseInt(register.getRegister(Integer.parseInt(rns,2)),2) + Integer.parseInt(dtAdds,2);
-            System.out.println(memLocation);
-            String g=mem.retriveWord(memLocation);
-            System.out.println("mem1");
-            System.out.println(g);
+       //     String g=mem.retriveWord(memLocation);
+
 
 
 
@@ -100,15 +141,90 @@ public class Operator {
         else if (name.equals("STUR")) {
             int memLocation= Integer.parseInt(register.getRegister(Integer.parseInt(rns,2)),2) + Integer.parseInt(dtAdds,2);
             String beingStored = register.getRegister(Integer.parseInt(rt,2));
-            System.out.println(memLocation);
-            System.out.println("pppp");
-            System.out.println(beingStored);
+
 
 
             mem.storeWord(memLocation,beingStored);
         }
     }
 
+
+    /**
+     * This executes instructions of type B such as B and BL.
+     * @param name    the name of the instruction
+     * @param addr    the address to jump to
+     */
+    public void executeOperationB(String name, String addr)
+    {
+        if(name.equals("B"))
+        {
+            mem.setCurrentIndex(Integer.parseInt(addr,2));
+        }
+
+       else if(name.equals("BL"))
+        {
+            mem.setLinkPointer("0x"+Integer.toHexString(mem.getCurrentIndex()));
+            mem.setCurrentIndex(Integer.parseInt(addr,2));
+        }
+
+    }
+
+
+    /**
+     * This executes instructions of type B such as CBZ and CBNZ.
+     * @param name    the name of the instruction
+     * @param addr    the address to jump to
+     * @param rt      the register that is being checked for conditional
+     */
+    public void executeOperationCB(String name, String addr, String rt)
+    {
+        if(name.equals("CBZ"))
+        {
+            if(Integer.parseInt(register.getRegister(
+                    Integer.parseInt(rt,2)),2) == 0)
+            {
+                mem.setCurrentIndex(Integer.parseInt(addr,2));
+            }
+
+        }
+
+        else if(name.equals("CBNZ"))
+        {
+            if(Integer.parseInt(register.getRegister(
+                    Integer.parseInt(rt,2)),2) != 0)
+            {
+                mem.setCurrentIndex(Integer.parseInt(addr,2));
+            }
+        }
+
+    }
+
+
+    /**
+     * This executes instructions of type CB such as CBZ and CBNZ.
+     * @param name    the name of the instruction
+     * @param rn      the register that is being pushed to stack or is being set with the pop value.
+     */
+    public void executeOperationS(String name, String rn){
+        if(name.equals("PUSH"))
+        {
+            mem.pushStack(register.getRegister(Integer.parseInt(rn,2)));
+        }
+        else if(name.equals("POP"))
+        {
+            String p=mem.popStack();
+
+            register.setRegisters(Integer.parseInt(rn,2),p);
+        }
+    }
+
+
+    /**
+     * Sets the required components from outside the class(pass through).
+     * @param reg  registers
+     * @param flag flags
+     * @param mems memory
+     */
     public void setComponents(Register reg, int[] flag,Memory mems){
         register=reg;
         flags=flag;
@@ -116,7 +232,11 @@ public class Operator {
     }
 
 
-
+    /**
+     * Gives the two's complement of a number
+     * @param binString the binary string
+     * @return the binary strings two's complement
+     */
     private String twoComplement(String binString)
     {
         char[] workingString = binString.toCharArray();
@@ -127,8 +247,7 @@ public class Operator {
                 workingString[i] = '1';
             }
         }
-            System.out.println("twos");
-            System.out.println(binString);
+
           return  binaryAddition(String.valueOf(workingString),"00000000000000000000000000000001");
 
 
@@ -137,10 +256,13 @@ public class Operator {
 
 
     //Referenced from https://stackoverflow.com/questions/8548586/adding-binary-numbers/8548599
+    /**
+     * This adds to binary strings.
+     * @param s1    the first string argument
+     * @param s2    the second string argument
+     */
     private  String binaryAddition(String s1, String s2) {
-        System.out.println("S1!");
-        System.out.println(s1);
-        System.out.println(s2);
+
         if (s1 == null || s2 == null) return "";
         int first = s1.length() - 1;
         int second = s2.length() - 1;
@@ -178,13 +300,17 @@ public class Operator {
         return padBinary(String.valueOf(sb));
     }
 
+    /**
+     * Pads the binary string to 32 bits.
+     * @param binrep the binary string
+     * @return the padded binary string
+     */
     private  String padBinary(String binrep)
     {
 
 
          if(binrep.length()<32 && binrep.substring(1,2).equals("0"))
         {
-            System.out.println("YES");
             int difference = (32-binrep.length());
             String sigFiller = new String(new char[difference]).replace("\0", "0");
             binrep= sigFiller+binrep;
@@ -192,7 +318,6 @@ public class Operator {
 
       else  if(binrep.length()<32 && binrep.substring(1,2).equals("1"))
         {
-            System.out.println("NO");
 
 
             int difference = (32-binrep.length());
@@ -207,10 +332,18 @@ public class Operator {
         return binrep;
     }
 
+
+    /**
+     * Logical left shift the inputted string numLog times.
+     * @param s1 the string argument
+     * @param numLog the number of shifts
+     * @return the string left shifted numLog times
+     */
     private String logicalLShift(String s1, String numLog)
     {
+
         s1=padBinary(s1);
-        for(int i=1; i<Integer.parseInt(numLog); i++)
+        for(int i=0; i<Integer.parseInt(numLog); i++)
         {
             s1=s1.substring(2)+"0";
         }
@@ -218,13 +351,19 @@ public class Operator {
 
     }
 
+    /**
+     * Arithmetical right shift the inputted string numLog times.
+     * @param s1 the string argument
+     * @param numLog the number of shifts
+     * @return the string right shifted numLog times
+     */
     private String arithRShift(String s1, String numLog)
     {
         s1=padBinary(s1);
         String arthBit="";
-        if(s1.substring(1).equals("0")) arthBit="0";
+        if(s1.substring(1,2).equals("0")) arthBit="0";
         else arthBit="1";
-        for(int i=1; i<Integer.parseInt(numLog); i++)
+        for(int i=0; i<Integer.parseInt(numLog); i++)
         {
             s1=arthBit+s1.substring(1,s1.length()-1);
         }
@@ -232,6 +371,12 @@ public class Operator {
 
     }
 
+    /**
+     * Finds the bitOr value
+     * @param s1    the first string argument
+     * @param s2    the second string argument
+     * @return the bitOR value
+     */
     private String bitOr(String s1, String s2)
     {
         s1=padBinary(s1);
@@ -240,13 +385,20 @@ public class Operator {
         for(int i=0; i<32; i++)
         {
 
-                if(s1.substring(i,i).equals("1") || s2.substring(i,i).equals("1")) or+="1";
+                if(s1.substring(i,i+1).equals("1") || s2.substring(i,i+1).equals("1")) or+="1";
                 else or+=0;
 
         }
+
         return or;
     }
 
+    /**
+     * Finds the bitEor value
+     * @param s1    the first string argument
+     * @param s2    the second string argument
+     * @return the bitEor value
+     */
     private String bitEor(String s1, String s2)
     {
         s1=padBinary(s1);
@@ -255,26 +407,36 @@ public class Operator {
         for(int i=0; i<32; i++)
         {
 
-            if(s1.substring(i,i).equals("1") || s2.substring(i,i).equals("1") &&
-            !(s1.substring(i,i).equals("1") && s2.substring(i,i).equals("1") )  ) eor+="1";
+            if(s1.substring(i,i+1).equals("1") || s2.substring(i,i+1).equals("1") &&
+            !(s1.substring(i,i+1).equals("1") && s2.substring(i,i+1).equals("1") )  ) eor+="1";
             else eor+=0;
 
         }
         return eor;
     }
 
+
+    /**
+     * Finds the bitAnd value
+     * @param s1    the first string argument
+     * @param s2    the second string argument
+     * @return the bitAnd value
+     */
     private String bitAnd(String s1, String s2)
     {
         s1=padBinary(s1);
         s2=padBinary(s2);
         String and="";
-        for(int i=0; i<32; i++)
+        for(int i=1; i<32; i++)
         {
+                if (s1.substring(i, i+1).equals("1") && s2.substring(i, i+1).equals("1")) and += "1";
+                else and+="0";
 
-            if(s1.substring(i,i).equals("1") && s2.substring(i,i).equals("1")) and+="1";
-            else and+=0;
+
+
 
         }
+
         return and;
     }
 }
