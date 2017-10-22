@@ -1,9 +1,14 @@
 package com.company;
 import java.io.*;
-import java.util.Map;
-import java.util.HashMap;
 
+/**
+ * Controls the parsing of the memory image and writing to files.
+ */
 public class Translator {
+  public static String  noisy; // check to see whether I should print out certain things
+  public static String hex;    // check to see what the memory image should be displayed in
+  private String filePath;
+  private String fileName;
   private  int wordSize=0;
   private  int regcnt=0;
   private  int maxmem=0x0;
@@ -14,11 +19,77 @@ public class Translator {
   private Cpu cpu;
 
 
-    public  void main(String[] args) throws IOException {
-
-
+    /**
+     * Constructor for the Translator class.
+     * @param filePath the path to the file ie. /home/user/folder
+     * @param fileName the name of the file ie. code.txt, code.o
+     * @param noisy    tells me whether I should print register changes
+     * @param hex      tells me how to display memory
+     */
+    public Translator(String filePath, String fileName,String noisy, String hex)
+    {
+        this.noisy=noisy;
+        this.hex=hex;
+        this.filePath=filePath;
+        this.fileName=fileName;
     }
 
+    /**
+     * Writes the memory and simulation to two separate files.
+     * The two files are mem"file" and sim"file"
+     * @throws IOException
+     */
+    public void save() throws IOException
+    {
+        BufferedWriter writerM =null;
+        BufferedWriter writerS =null;
+
+        try {
+            writerM = new BufferedWriter(new FileWriter(filePath+"mem"+fileName));
+            writerS = new BufferedWriter(new FileWriter(filePath+"sim"+fileName));
+
+
+            if(hex.equals("false")) {
+                writerM.write(memMap.stringMap());
+            }
+            else{
+                writerM.write(memMap.stringMapHex());
+            }
+           writerS.write("Registers:"+"\n");
+           writerS.write(cpu.getRegisters());
+            writerS.write("SP: "+cpu.getStack()+"\n");
+            writerS.write("LR: "+cpu.getLinkRegister()+"\n");
+            writerS.write("Flags: "+"\n");
+            writerS.write(cpu.getFlags());
+            writerS.write("PC: " +cpu.getCurrentLocation()+"\n");
+
+
+
+
+        }
+        finally {
+            if (writerM != null) {
+                writerM.close();
+            }
+            if (writerS != null) {
+                writerS.close();
+            }
+
+        }
+    }
+
+    /**
+     * Resets the memory to original state before the simulator started
+     */
+    public void reset()
+    {
+        memMap.reset();
+    }
+
+
+    /**
+     * Sets the record of assembly Instructions that the program can work with.
+     */
     void setInstructions()
     {
         ins.addInstruction("HALT","1","R");
@@ -53,6 +124,15 @@ public class Translator {
         ins.addInstruction("LSL","69b","R");
         ins.addInstruction("LSR","69a","R");
 
+        ins.addInstruction("B", "0a0","B");
+        ins.addInstruction("BL", "4a0","B");
+
+        ins.addInstruction("CBNZ", "5a8","CB");
+        ins.addInstruction("CBZ", "5a0","CB");
+
+        ins.addInstruction("PUSH", "11","S");
+        ins.addInstruction("POP", "21","S");
+
 
 
 
@@ -62,7 +142,14 @@ public class Translator {
 
     }
 
-    void readAssemblyFile(String inputFile) throws  IOException
+    /**
+     * Reads and calls the parse method on the memory image.
+     * Sets the memory back up when finished.
+     * Creates the Cpu when finished.
+     * @param inputFile the memory image being read
+     * @throws IOException
+     */
+    void readMemFile(String inputFile) throws  IOException
     {
         ins = new InstructionSet();
         setInstructions();
@@ -71,7 +158,7 @@ public class Translator {
 
 
         try {
-            reader = new BufferedReader(new FileReader("/home/tokorealand/output.txt"));
+            reader = new BufferedReader(new FileReader(filePath+fileName));
 
 
             String line;
@@ -80,11 +167,10 @@ public class Translator {
                 parseMem(line);
 
             }
+            memMap.setMemoryBackUp();
             cpu=new Cpu(ins,memMap,regcnt);
 
-            memMap.printMap();
 
-          //  parseForInstruction();
 
         }
         finally {
@@ -98,7 +184,10 @@ public class Translator {
     }
 
 
-
+    /**
+     * Parses the given line for assembly commands or simulator parameters.
+     * @param memLine the line being parsed
+     */
     private void parseMem(String memLine) {
         String[] command = new String[6];
         String[] arrayLine;
@@ -128,64 +217,15 @@ public class Translator {
     }
 
 
-
-    void parseForInstruction()
-    {
-        int currentByte=0;
-        while(currentByte+4<maxmem) {
-            String commandLine = memMap.retriveWord(currentByte);
-            String command = ins.parseMemoryForInstruction(commandLine);
-            if(command!="") System.out.println(command+"cool");
-            currentByte+=4;
-        }
-
-
-    }
-
-
-    String fromHexString(String hex, int bits) {
-        int hexInt = Long.decode(hex).intValue();
-
-        // System.out.println(hexInt);
-        String holder = hexToBinary(hexInt);
-        if(holder.length()<bits)
-        {
-            int padding = bits-holder.length();
-            String pads="";
-            for (int i=0; i<padding; i++)
-            {
-                pads+="0";
-            }
-            holder=pads+holder;
-
-        }
-        return holder;
-
-    }
-
-    public int fromBinaryToInt(String bin) {
-        int binInt = Integer.parseInt(bin,2);
-
-        // System.out.println(hexInt);
-        return binInt;
-    }
-
-    private String hexToBinary(int hex) {
-        String bin = Integer.toBinaryString(hex);
-        //System.out.println(bin.toString());
-        return bin;
-    }
-
-    private String binarytoHex(String bin) {
-        int decimal = Integer.parseInt(bin,2);
-        String hex = Integer.toString(decimal,16);
-        //System.out.println(bin.toString());
-        return hex;
-    }
-
+    /**
+     * Gets a string representation of the memory.
+     * @return a string representation of the memory.
+     */
     public String retreiveMemImage()
     {
+        if(hex.equals("false"))
         return memMap.stringMap();
+        else return memMap.stringMapHex();
     }
 
     public Cpu sendCpu()
