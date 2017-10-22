@@ -1,22 +1,41 @@
 package com.company;
 import java.math.BigInteger;
 
+
+/**
+ * The InstructionSet class manages all instructions and is used for checking strings for
+ * any assembly commands and executes them if found.
+ */
 public class InstructionSet {
-    private Instruction[] ins = new Instruction[20];
+    private Instruction[] ins = new Instruction[26];
     private int current=0;
     private Operator op = new Operator();
 
+    /**
+     * Constructor
+     */
     public InstructionSet()
     {
 
     }
 
-
+    /**
+     * Sends the required components to the operator.
+     * @param reg the registers
+     * @param flags the flags
+     * @param mem the main memory
+     */
     void establishOperator(Register reg, int[] flags, Memory mem)
     {
         op.setComponents(reg,flags,mem);
     }
 
+    /**
+     * Adds an instruction to the array.
+     * @param name the name of the instruction
+     * @param opcode the opcode of the instruction
+     * @param type the type of the instruction
+     */
     void addInstruction(String name, String opcode, String type)
     {
         ins[current]=new Instruction( name, opcode, type);
@@ -24,65 +43,119 @@ public class InstructionSet {
     }
 
 
-
+    /**
+     * Looks for a match to the given opcode and returns that instruction.
+     * @param opcode the opcode being searched for
+     * @return null or the instruction found
+     */
     private Instruction checkForOp(String opcode) {
+
         for (int i=0; i<ins.length; i++)
         {
-            if(opcode.equals(ins[i].opcode) || opcode.equals(ins[i].opcode2)) return ins[i];
+
+            if(Integer.parseInt(opcode.substring(2),16) == Integer.parseInt(ins[i].opcode.substring(2),16) ||
+                    Integer.parseInt(opcode.substring(2),16) == Integer.parseInt(ins[i].opcode2.substring(2),16)) return ins[i];
+
         }
         return null;
     }
 
-    String parseMemoryForInstruction(String bitCommand)
-    {
+
+    /**
+     * Parses the given string for a command.
+     * If command is found - it is decoded and executed
+     * Otherwise returns a empty string.
+     * @param bitCommand the strign being checked
+     * @return the command string(assembly representaion of binary) or a blank string
+     */
+    String parseMemoryForInstruction(String bitCommand) {
         char[] memlineBin = bitCommand.toCharArray();
         char[] opcodeCheck = new char[11];
-        String command="";
-        for(int i = 0; i<11; i++) {
+        String command = "";
+        for (int i = 0; i < 11; i++) {
             if (i < 11) {
                 opcodeCheck[i] = memlineBin[i];
             }
         }
 
 
-        Instruction iR = checkForOp("0x"+binarytoHex(String.valueOf(opcodeCheck)));
-        if(iR!=null) {
+
+        Instruction iR = checkForOp("0x" + binarytoHex(String.valueOf(opcodeCheck)));
+
+        if (iR != null) {
 
             if (iR.name.equals("HALT")) return "HALT";
 
 
             if (iR.type.equals("R")) {
-                char[] opcode = new char[11];
-                char[] rd = new char[5];
-                char[] rm = new char[5];
-                char[] shamt = new char[6];
-                char[] rn = new char[5];
 
-                for (int i = 0; i < memlineBin.length; i++) {
-                    if (i < 11) {
-                        opcode[i] = memlineBin[i];
+                if(iR.name.equals("LSL") || iR.name.equals("LSR"))
+                {
+                    char[] opcode = new char[11];
+                    char[] rd = new char[5];
+                    char[] rm = new char[5];
+                    char[] shamt = new char[6];
+                    char[] rn = new char[5];
+
+                    for (int i = 0; i < memlineBin.length; i++) {
+                        if (i < 11) {
+                            opcode[i] = memlineBin[i];
+                        }
+                        if (i > 10 && i < 16) {
+                            rm[i - 11] = memlineBin[i];
+                        }
+                        if (i > 15 && i < 22) {
+                            shamt[i - 16] = memlineBin[i];
+                        }
+                        if (i > 21 && i < 27) {
+                            rn[i - 22] = memlineBin[i];
+                        }
+                        if (i > 26) {
+                            rd[i - 27] = memlineBin[i];
+                        }
+
                     }
-                    if (i > 10 && i < 16) {
-                        rm[i - 11] = memlineBin[i];
-                    }
-                    if (i > 15 && i < 22) {
-                        shamt[i - 16] = memlineBin[i];
-                    }
-                    if (i > 21 && i < 27) {
-                        rn[i - 22] = memlineBin[i];
-                    }
-                    if (i > 26) {
-                        rd[i - 27] = memlineBin[i];
-                    }
+                    op.executeOperationR(iR.name, String.valueOf(rd), String.valueOf(rm), String.valueOf(shamt), String.valueOf(rn));
+
+                    command = iR.name +
+                            " X" + String.valueOf(Integer.parseInt(String.valueOf(rd), 2)) +
+                            ", X" + String.valueOf(Integer.parseInt(String.valueOf(rn), 2)) +
+                            ", #" + String.valueOf(Integer.parseInt(String.valueOf(shamt), 2) + ";");
 
                 }
-                op.executeOperationR(iR.name,String.valueOf(rd),String.valueOf(rm),String.valueOf(shamt),String.valueOf(rn));
+                else {
+                    char[] opcode = new char[11];
+                    char[] rd = new char[5];
+                    char[] rm = new char[5];
+                    char[] shamt = new char[6];
+                    char[] rn = new char[5];
 
-                command = iR.name +
-                        " X" + String.valueOf(Integer.parseInt(String.valueOf(rd), 2)) +
-                        ", X" + String.valueOf(Integer.parseInt(String.valueOf(rn), 2)) +
-                        ", X" + String.valueOf(Integer.parseInt(String.valueOf(rm), 2) + ";");
+                    for (int i = 0; i < memlineBin.length; i++) {
+                        if (i < 11) {
+                            opcode[i] = memlineBin[i];
+                        }
+                        if (i > 10 && i < 16) {
+                            rm[i - 11] = memlineBin[i];
+                        }
+                        if (i > 15 && i < 22) {
+                            shamt[i - 16] = memlineBin[i];
+                        }
+                        if (i > 21 && i < 27) {
+                            rn[i - 22] = memlineBin[i];
+                        }
+                        if (i > 26) {
+                            rd[i - 27] = memlineBin[i];
+                        }
 
+                    }
+                    op.executeOperationR(iR.name, String.valueOf(rd), String.valueOf(rm), String.valueOf(shamt), String.valueOf(rn));
+
+                    command = iR.name +
+                            " X" + String.valueOf(Integer.parseInt(String.valueOf(rd), 2)) +
+                            ", X" + String.valueOf(Integer.parseInt(String.valueOf(rn), 2)) +
+                            ", X" + String.valueOf(Integer.parseInt(String.valueOf(rm), 2) + ";");
+
+                }
             }
 
             if (iR.type.equals("I")) {
@@ -111,11 +184,8 @@ public class InstructionSet {
                 String rnS = String.valueOf(rn);
                 String aluS = String.valueOf(alu);
 
-                System.out.println(rdS+" "+rnS+" "+aluS);
-                System.out.println("SSSSSSSSSSDDDD");
 
-
-                op.executeOperationI(iR.name,aluS,rdS,rnS);
+                op.executeOperationI(iR.name, aluS, rdS, rnS);
 
 
                 if (String.valueOf(alu).length() % 4 == 0 && String.valueOf(alu).substring(0, 1).equals("1")) {
@@ -126,10 +196,8 @@ public class InstructionSet {
                     aluS = String.valueOf(aluI);
 
 
-                }
-                else
-                {
-                    aluS=String.valueOf(Integer.parseInt(aluS,2));
+                } else {
+                    aluS = String.valueOf(Integer.parseInt(aluS, 2));
                 }
 
 
@@ -169,13 +237,89 @@ public class InstructionSet {
                 String rnS = String.valueOf(rn);
                 String dtAddS = String.valueOf(dtAdd);
 
-                op.executeOperationD(iR.name,rtS,rnS,dtAddS);
+                op.executeOperationD(iR.name, rtS, rnS, dtAddS);
 
 
                 command = iR.name +
                         " X" + String.valueOf(Integer.parseInt(String.valueOf(rt), 2)) +
                         ", [X" + String.valueOf(Integer.parseInt(String.valueOf(rn), 2)) +
-                        ", #" + String.valueOf(Integer.parseInt(String.valueOf(dtAdd), 2) +"]" + ";");
+                        ", #" + String.valueOf(Integer.parseInt(String.valueOf(dtAdd), 2) + "]" + ";");
+
+            }
+
+            if (iR.type.equals("B")) {
+                char[] opcode = new char[11];
+                char[] addr = new char[21];
+
+
+                for (int i = 0; i < memlineBin.length; i++) {
+                    if (i < 11) {
+                        opcode[i] = memlineBin[i];
+                    }
+                    if (i > 10) {
+                        addr[i - 11] = memlineBin[i];
+                    }
+
+
+                }
+
+                command = iR.name  +" 0x" +String.valueOf(Integer.toHexString(Integer.parseInt(String.valueOf(addr), 2)));
+                op.executeOperationB(iR.name, String.valueOf(addr));
+
+
+
+            }
+
+            if (iR.type.equals("CB")) {
+                char[] opcode = new char[11];
+                char[] addr = new char[16];
+                char[] rt = new char[5];
+
+
+                for (int i = 0; i < memlineBin.length; i++) {
+                    if (i < 11) {
+                        opcode[i] = memlineBin[i];
+                    }
+                    if (i > 10 && i <27 ) {
+                        addr[i - 11] = memlineBin[i];
+                    }
+                    if (i > 26) {
+                        rt[i - 27] = memlineBin[i];
+                    }
+
+
+                }
+                command = iR.name + " X"+Integer.parseInt(String.valueOf(rt),2) +
+                        " 0x" +String.valueOf(Integer.toHexString
+                        (Integer.parseInt(String.valueOf(addr), 2)));
+
+                op.executeOperationCB(iR.name, String.valueOf(addr), String.valueOf(rt));
+
+
+
+            }
+
+            if (iR.type.equals("S")) {
+                char[] opcode = new char[11];
+                char[] rn = new char[21];
+
+
+                for (int i = 0; i < memlineBin.length; i++) {
+                    if (i < 11) {
+                        opcode[i] = memlineBin[i];
+                    }
+                    if (i > 10)   {
+                        rn[i - 11] = memlineBin[i];
+                    }
+
+
+
+                }
+                command = iR.name + " X"+Integer.parseInt(String.valueOf(rn),2)+";";
+
+                op.executeOperationS(iR.name, String.valueOf(rn));
+
+
 
             }
 
@@ -220,8 +364,7 @@ public class InstructionSet {
             command[1]=Integer.toString(Integer.parseInt(arrayLine[3].substring(1,arrayLine[3].length()-1)),16);
             command[2]= arrayLine[2].substring(1,arrayLine[2].length()-1);
             command[3]=arrayLine[1].substring(1,arrayLine[1].length()-1);
-            //System.out.println(command[0]+" "+command[1]+ " " +command[2]+" " +command[3]);
-            //System.out.println("ADADADADA");
+
 
             command[0]=fromHexString(command[0],10);
             command[0]=command[0].substring(0,10);
@@ -231,15 +374,7 @@ public class InstructionSet {
 
 
             String commandString = command[0] + command[1] + command[2] + command[3];
-            //System.out.println("here" + commandString);
-            //System.out.println("here" + command[0]);
-            //System.out.println("here" + command[1]);
-            //System.out.println("here" + command[2]);
-            //System.out.println("here" + command[3]);
 
-
-            //System.out.println(command[0]);
-            //System.out.println(iR.opcode);
 
 
             return commandString;
@@ -264,6 +399,68 @@ public class InstructionSet {
             String commandString = command[0] + command[1] + command[2] + command[3] +command[4];
             return commandString;
         }
+
+
+        if(iR.type=="B")
+        {
+            arrayLine= parsedLine.split("\\s+");
+            command[0]=iR.opcode;
+            command[1]=(arrayLine[1].substring(0,arrayLine[3].length()-1));
+
+
+
+
+            command[0]=fromHexString(command[0],6);
+            command[1]=fromHexString(command[1],26);
+
+
+            String commandString = command[0] + command[1];
+            return commandString;
+        }
+
+        if(iR.type=="CB")
+        {
+            arrayLine= parsedLine.split("\\s+");
+            command[0]=iR.opcode;
+            command[1]=(arrayLine[1].substring(1,arrayLine[1].length()-1));
+            command[2]=(arrayLine[2].substring(0,arrayLine[2].length()-1));
+
+
+
+            command[0]=fromHexString(command[0],11);
+            command[1]=fromHexString(command[1],5);
+            command[2]=fromHexString(command[2],16);
+
+
+
+            String commandString = command[0] + command[1] + command[2];
+            return commandString;
+        }
+
+        if(iR.type.equals("S"))
+        {
+
+            arrayLine= parsedLine.split("\\s+");
+            command[0]=iR.opcode;
+            command[1]=(arrayLine[1].substring(1,arrayLine[1].length()-1));
+
+
+
+
+
+
+            command[0]=fromHexString(command[0],11);
+            command[1]=fromHexString(command[1],21);
+
+
+
+
+
+            String commandString = command[0] + command[1];
+            return commandString;
+        }
+
+
         return "";
 
     }
@@ -273,7 +470,6 @@ public class InstructionSet {
 
 
 
-        // System.out.println(hexInt);
         String holder = hexToBinary(hexInt);
         if(holder.length()<bits)
         {
@@ -291,7 +487,6 @@ public class InstructionSet {
     }
     private String hexToBinary(int hex) {
         String bin = Integer.toBinaryString(hex);
-        //System.out.println(bin.toString());
 
 
         return bin;
@@ -305,7 +500,6 @@ public class InstructionSet {
 
 
         String hex = Integer.toString(decimal,16);
-        //System.out.println(bin.toString());
         return hex;
     }
 
