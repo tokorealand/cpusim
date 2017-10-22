@@ -1,12 +1,15 @@
 package com.company;
 
-class Instruction {
+/**
+ * The Instruction class contains representations of assembly commands.
+ */
+public class Instruction {
     String type;
     private int opcodeBitSize;
     private String commandString;
     String name;
     String opcode;
-    String opcode2;
+    String opcode2="0010";
 
     Instruction(String name)
     {
@@ -14,11 +17,19 @@ class Instruction {
 
     }
 
+    /**
+     *
+     * @param name the name of the instruction.
+     * @param opcode the opcode of the instruction
+     * @param type the type of the instruction
+     */
     Instruction(String name,String opcode, String type)
     {
         this.name=name;
         this.opcode="0x" + opcode;
-        if(type.equals("I")) this.opcode2 ="0x"+ String.valueOf(Integer.parseInt(opcode)+1);
+        if(type.equals("I")) this.opcode2 ="0x"+ Integer.toHexString(Integer.parseInt(opcode,16)+1);
+        else if(type.equals("B")) this.opcode2 ="0x"+ Integer.toHexString(Integer.parseInt(opcode,16)+31);
+
         this.type=type;
         setOpcodeBitSize();
     }
