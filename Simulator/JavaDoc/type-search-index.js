@@ -1,0 +1,1 @@
+typeSearchIndex = [{"p":"com.company","l":"Byte"},{"p":"com.company","l":"Cpu"},{"p":"com.company","l":"Gui"},{"p":"com.company","l":"Instruction"},{"p":"com.company","l":"InstructionSet"},{"p":"com.company","l":"Main"},{"p":"com.company","l":"Memory"},{"p":"com.company","l":"Operator"},{"p":"com.company","l":"Register"},{"p":"com.company","l":"Translator"}]
